@@ -1,0 +1,47 @@
+{
+  "name": "yipan",
+  "authors": [
+    "meior <494579004@qq.com>"
+  ],
+  "description": "A teaching and examination system based on MEAN Stack(MongoDB+Express+Angularjs+Node.js)",
+  "main": "server.js",
+  "keywords": [
+    "nodejs",
+    "express",
+    "angularjs",
+    "mongodb",
+    "mean-stack",
+    "examination-management",
+    "examination",
+    "teaching"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/meior/yipan#readme",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "public/bower"
+  ],
+  "dependencies": {
+    "angular": "~1.4.5",
+    "angular-animate": "~1.4.6",
+    "angular-file-upload": "~2.1.4",
+    "angular-meditor": "~1.4.2",
+    "angular-route": "~1.4.6",
+    "angular-sanitize": "~1.4.7",
+    "angular-strap": "~2.3.2",
+    "angulartics": "~0.17.2",
+    "angular-tree-control": "0.2.22",
+    "async": "~1.4.2",
+    "jquery": "~2.1.4",
+    "SHA-1": "~0.1.1",
+    "videogular": "~1.3.2",
+    "jquery-waypoints": "~2.0.5",
+    "bootstrap": "~3.3.5",
+    "font-awesome": "~4.4.0"
+  },
+  "resolutions": {
+    "angular": "1.3.15"
+  }
+}
