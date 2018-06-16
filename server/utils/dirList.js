@@ -1,5 +1,5 @@
 /**
- * 常用的工具类函数
+ * Commonly used tool functions
 * Created by Administrator on 2015/7/10.
 */
 

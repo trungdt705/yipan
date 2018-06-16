@@ -36,7 +36,7 @@ angular.module('roleCtrl', ['pageService','baseService','permissionService'])
         vm.isSuccess  = true;
         vm.permission = Permission;
         vm.permission.init(0);
-
+        console.log(vm)
         vm.save = function (editForm) {
             vm.processing   = true;
             vm.message      = '';

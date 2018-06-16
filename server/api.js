@@ -1534,7 +1534,6 @@ module.exports = function (app, express) {
     apiRouter.route('/exams')
         //Used to query the number of records under the specified conditions
         .patch(function (req, res) {
-            console.log(req.body)
             //if(!ServerLogger.allowed('user','view', req.decoded))
             //    return res.json({message:Const.Msg.NotAuthenticated});
 
@@ -2433,7 +2432,7 @@ module.exports = function (app, express) {
         });
 
     ////////////////////////////////////////////
-    //////Student queries include their own check-in information//chưa biết để làm gì
+    //////Student queries include their own check-in information
     ////////////////////////////////////////////
     apiRouter.route('/signstudent')
         .get(function (req, res) {
@@ -2639,7 +2638,6 @@ module.exports = function (app, express) {
         .patch(function (req, res) {
             //if(!ServerLogger.allowed('role','view', req.decoded))
             //    return res.json({message:Const.Msg.NotAuthenticated});
-            console.log(req.body)
             var criteria = {};
             if (req.body.criteria) {
                 criteria = req.body.criteria;
@@ -2706,7 +2704,6 @@ module.exports = function (app, express) {
         .post(function (req, res) {
             //if(!ServerLogger.allowed('role','create', req.decoded))
             //    return res.json({message:Const.Msg.NotAuthenticated});
-            console.log(req.body)
             var role = new Role();
             role.name = req.body.name;
             role.code = req.body.code;
@@ -2918,7 +2915,6 @@ module.exports = function (app, express) {
 
         //Used to query data collections by page
         .put(function (req, res) {
-            console.log(req.body.criteriaFilter)
             //The condition of the query folder is generally path, and occasionally has the isFile attribute, used to select the move destination
             var criteria = {};
             if (req.body.criteriaFilter) {
@@ -2926,7 +2922,6 @@ module.exports = function (app, express) {
             } else //Default search root directory
                 criteria = { path: '.', isDelete: 0 };
             //First check if the specified directory exists to prevent access to the directory that does not exist or has been renamed through the navigation history
-            console.log(criteria)
             if (!criteria.path)
                 return res.json({ message: 'Illegal request: The current path is not specified.' });
             //Processing Recycle Bin Data Requests
@@ -2950,10 +2945,10 @@ module.exports = function (app, express) {
                 async.waterfall([function (callback) {
                     if (criteria.path.length > 1) {//Check outside the root directory
                         var pos = criteria.path.lastIndexOf('/');
+                        console.log(pos)
                         if (pos > -1) {
                             var p = criteria.path.substring(0, pos);
                             var n = criteria.path.substring(pos + 1);
-                            console.log(p)
                             File.find({ path: p, name: n }).exec(function (err, data) {
                                 if (err) callback(err);
                                 console.log('data ' + data)
@@ -3440,7 +3435,7 @@ module.exports = function (app, express) {
                 //When deleting a directory, the directory is marked as deleted and the subfiles and subdirectories are marked as ten seconds after the initial time
                 File.update(criteria, { isDelete: new Date(10000) }, function (err, file) {
                     if (err) return res.send(err);
-                    //再删除目录本身
+                    //Then delete the directory itself
                     File.update({ _id: config.id }, { isDelete: Date.now() }, function (err, file) {
                         if (err) return res.send(err);
                         res.json({ success: true, message: Const.Msg.DelOK });
@@ -3462,10 +3457,12 @@ module.exports = function (app, express) {
             //2.Renamed by a regular match in the recursive directory
             var oldPath = config.path + '/' + config.oldName + '/';
             var pathReg = oldPath.replace(/([*+-.?^${}()|[\]\/\\])/g, '\\$1');
+            console.log(pathReg)
             var criteria = { path: { $regex: '^(' + pathReg + ')' } };
             File.find(criteria).select('_id path').exec(function (err, data) {
                 //As the batch cannot be modified, the first step to find these records
                 if (err) return res.send(err);
+                console.log(data)
                 if (data && data.length > 0) {
                     var oldLength = oldPath.length;
                     var stamPath = config.path + '/' + config.newName + '/';
