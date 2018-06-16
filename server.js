@@ -107,4 +107,4 @@ app.get('*', function (req, res) {
  * Start the server and listen for requests from the front end
  */
 app.listen(config.port);
-console.log('Magic happens on port ' + config.port);
+console.log('Magic happens on port hehe' + config.port);
