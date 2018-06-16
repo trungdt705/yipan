@@ -44,7 +44,7 @@ var DetailSchema = new Schema(
     {
         name: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
         ,date: {type: Date, default:Date.now()}
-        ,status: {type: String, default:'未签到'}
+        ,status: {type: String, default:'NOT_CHECKEDIN'}
         ,ip: {type: String}
         ,remark: {type: String}
     }

@@ -30,9 +30,9 @@ var Mark = new Schema(
 var UserSchema = new Schema({
     //Username is the primary key, it is not allowed to repeat and an index is established on it
     code: {type: String, required: true, index: {unique: true}
-        , validate:[stringLengthMin, '代码长度最少2位']},
+        , validate:[stringLengthMin, 'Minimum 2 digits in code length']},
     name: {type: String, required: true
-        , validate:[stringLengthMin, '名称长度最少2位']},
+        , validate:[stringLengthMin, 'Minimum two name lengths']},
     _p_name: {type: String, select: false},
     //The password cannot be null, and does not return the password value when it is queried by the find method
     pwd: {type: String, required: true, select: false},

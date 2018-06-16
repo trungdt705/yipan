@@ -4,7 +4,7 @@
  * @type {*|exports}
  */
 
-//加载各种服务类型
+//Load various service types
 var express           = require('express');		// call express
 var app               = express(); 				// define our app using express
 var bodyParser        = require('body-parser'); 	// get body-parser
@@ -43,9 +43,9 @@ Date.prototype.format = function (fmt) { //author: meizz
         "d+": this.getDate(), //day
         "h+": this.getHours(), //hour
         "m+": this.getMinutes(), //Minute
-        "s+": this.getSeconds(), //秒
+        "s+": this.getSeconds(), //second
         "q+": Math.floor((this.getMonth() + 3) / 3), //Quarterly
-        "S": this.getMilliseconds() //毫秒
+        "S": this.getMilliseconds() //millisecond
     };
     if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
     for (var k in o)

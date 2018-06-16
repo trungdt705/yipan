@@ -92,11 +92,11 @@ module.exports = (function () {
     };
 
     //Merge two path permissions
-    //p3 = {supplier:{code:['yiyu']}, user:{name:['张三','李四']}};
-    //p4 = {supplier:{code:['lhq'],name:['ywy']}, user:{code:['ftong'],name:['王武']}
+    //p3 = {supplier:{code:['yiyu']}, user:{name:['Zhang San','Li Si']}};
+    //p4 = {supplier:{code:['lhq'],name:['ywy']}, user:{code:['ftong'],name:['Wang Wu']}
     //    , log:{remark:['ddd']}};
     //pMerged2 = {supplier:{code:['yiyu','lhq'],name:['ywy']}
-    //    , user:{code:['ftong'],name:['王武','张三','李四']}
+    //    , user:{code:['ftong'],name:['Wang Wu','Zhang San','Li Si']}
     //    , log:{remark:['ddd']}};
     pCode.mergeProperty = function (p1, p2) {
         for (var i in p2) {

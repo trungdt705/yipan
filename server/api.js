@@ -649,13 +649,13 @@ module.exports = function (app, express) {
                 })
                 .then(function () {
                     if (!data || !data.ok)
-                        return Promise.reject('更新失败');
+                        return Promise.reject('Failed to update');
 
                     res.json({ success: true });
                     return Promise.resolve();
                 })
                 .catch(function (error) {
-                    res.send({ message: '新增用户批注信息失败' + JSON.stringify(error) });
+                    res.send({ message: 'Failed to add user annotation information' + JSON.stringify(error) });
                 })
                 ;
         })
@@ -1242,7 +1242,7 @@ module.exports = function (app, express) {
             });
         });
 
-    //////////examination//////////
+    //////////EXAMINATION//////////
     apiRouter.route('/examconfigs')
         //Return all records, generally used for association//chưa biết dùng làm gì
         .get(function (req, res) {
@@ -1304,16 +1304,16 @@ module.exports = function (app, express) {
                         var now = new Date();
                         var begin;
                         for (var i in data) {
-                            //Examination status is only available for exams that have already been published.
+                            //EXAMINATION status is only available for exams that have already been published.
                             if (data[i].isPublic) {
                                 //The status of the exam is only three, not started, the exam, and the end, depending on where the current time is before the start time and the end time.
                                 if (data[i].dateEnd < now)
-                                    data[i]._doc.status = '已结束';//over
+                                    data[i]._doc.status = 'OVER';//over
                                 else {//Start time needs to consider the number of minutes in advance
                                     if (now < data[i].dateBeginAhead)
-                                        data[i]._doc.status = '未开始';//has not started
+                                        data[i]._doc.status = 'NOT_STARTED';//has not started
                                     else
-                                        data[i]._doc.status = '考试中';//Examination
+                                        data[i]._doc.status = 'EXAMINATION';//EXAMINATION
                                 }
                             }
                         }
@@ -1434,7 +1434,7 @@ module.exports = function (app, express) {
 
         })
 
-        //IP examination for examination papers to participate in examinations and examinations
+        //IP EXAMINATION for EXAMINATION papers to participate in EXAMINATIONs and EXAMINATIONs
         .patch(function (req, res) {
             Exam.find({ config: req.params._id })
                 .populate('tester', 'name code')
@@ -1546,9 +1546,9 @@ module.exports = function (app, express) {
              * Test papers may have several special query conditions
              * Possible parameters are:
              *  config          Test ID Array
-             *  configStatus    Examination status array
+             *  configStatus    EXAMINATION status array
              *  point           Total score range
-             *  submitStatus    Examination result status array
+             *  submitStatus    EXAMINATION result status array
              *  testerKey       Candidate Student ID or Name Match Keyword
              */
             Promise.resolve()
@@ -1580,23 +1580,23 @@ module.exports = function (app, express) {
                             var statuss = criteria.configStatus['$in'];
                             //A query condition
                             if (statuss.length == 1) {
-                                if (statuss[0] == '未开始') {//has not started
+                                if (statuss[0] == 'NOT_STARTED') {//has not started
                                     cr['dateBeginAhead'] = { '$gt': now };
-                                } else if (statuss[0] == '已结束') {//over
+                                } else if (statuss[0] == 'OVER') {//over
                                     cr['dateEnd'] = { '$lt': now };
-                                } else if (statuss[0] == '考试中') {//Examination
+                                } else if (statuss[0] == 'EXAMINATION') {//EXAMINATION
                                     cr['dateEnd'] = { '$gt': now };
                                     cr['dateBeginAhead'] = { '$lt': now };
                                 }
                             } else if (statuss.length == 2) {
                                 //Two query conditions
-                                if (statuss.indexOf('未开始') < 0) {//has not started
+                                if (statuss.indexOf('NOT_STARTED') < 0) {//has not started
                                     //Excluded does not start, it means that the test has been completed and has ended, that is, the current time after the test start time
                                     cr['dateBeginAhead'] = { '$lt': now };
-                                } else if (statuss.indexOf('已结束') < 0) {//over
+                                } else if (statuss.indexOf('OVER') < 0) {//over
                                     //If the end of the exam is not included, it means that the exam has not started and the exam is in two kinds, that is, the exam end time is greater than the current time
                                     cr['dateEnd'] = { '$gt': now };
-                                } else if (statuss.indexOf('考试中') < 0) {//Examination
+                                } else if (statuss.indexOf('EXAMINATION') < 0) {//EXAMINATION
                                     //Excluding exams, it means either it has ended or it has not yet begun
                                     cr['dateEnd'] = { '$lt': now };
                                     cr['dateBeginAhead'] = { '$gt': now };
@@ -1614,9 +1614,9 @@ module.exports = function (app, express) {
                             var statuss = criteria.publicStatus['$in'];
                             //A query condition
                             if (statuss.length == 1) {
-                                if (statuss[0] == '已发布') {//Published
+                                if (statuss[0] == 'PUBLISHED') {//Published
                                     cr['isPublic'] = true;
-                                } else if (statuss[0] == '未发布') {//Unpublished
+                                } else if (statuss[0] == 'UNPUBLISHED') {//Unpublished
                                     cr['isPublic'] = false;
                                 }
                             }
@@ -1656,7 +1656,7 @@ module.exports = function (app, express) {
                         criteria.tester = { $in: ps };
                     }
 
-                    //Is there a requirement for the examination papers and status
+                    //Is there a requirement for the EXAMINATION papers and status
                     if (criteria.hasOwnProperty('submitStatus')) {
                         //Conversions to both isSubmit and isCorrected
                         //'Undelivered volume', 'Offered, Undetermined', 'Approved'
@@ -1664,23 +1664,23 @@ module.exports = function (app, express) {
                             var statuss = criteria.submitStatus['$in'];
                             //A query condition
                             if (statuss.length == 1) {
-                                if (statuss[0] == '未交卷') {//Unpaid
+                                if (statuss[0] == 'UNPAID') {//Unpaid
                                     criteria['isSubmit'] = false;
-                                } else if (statuss[0] == '已判卷') {//Sentenced
+                                } else if (statuss[0] == 'PASSED') {//Sentenced
                                     criteria['isCorrected'] = true;
-                                } else if (statuss[0] == '已交卷，未判卷') {//Has been handed in, but has not yet delivered
+                                } else if (statuss[0] == 'NOTPASSED') {//Has been handed in, but has not yet delivered
                                     criteria['isCorrected'] = false;
                                     criteria['isSubmit'] = true;
                                 }
                             } else if (statuss.length == 2) {
                                 //Two query conditions
-                                if (statuss.indexOf('未交卷') < 0) {//Unpaid
+                                if (statuss.indexOf('UNPAID') < 0) {//Unpaid
                                     //Excluding unpaid rolls
                                     criteria['isSubmit'] = true;
-                                } else if (statuss.indexOf('Sentenced') < 0) {
+                                } else if (statuss.indexOf('PASSED') < 0) {
                                     //Excluding already sentenced
                                     criteria['isCorrected'] = false;
-                                } else if (statuss.indexOf('已交卷，未判卷') < 0) {//Has been handed in, but has not yet delivered
+                                } else if (statuss.indexOf('NOTPASSED') < 0) {//Has been handed in, but has not yet delivered
                                     //Excluding remitted papers, no papers are counted, that is, they have to be handed in and scored.
                                     criteria['$or'] = [{ isSubmit: false }, { isSubmit: true, isCorrected: true }];
                                 }
@@ -1739,23 +1739,23 @@ module.exports = function (app, express) {
                             var statuss = criteria.configStatus['$in'];
                             //A query condition
                             if (statuss.length == 1) {
-                                if (statuss[0] == '未开始') {//has not started
+                                if (statuss[0] == 'NOTSTARTED') {//has not started
                                     cr['dateBeginAhead'] = { '$gt': now };
-                                } else if (statuss[0] == '已结束') {//over
+                                } else if (statuss[0] == 'OVER') {//over
                                     cr['dateEnd'] = { '$lt': now };
-                                } else if (statuss[0] == '考试中') {//Examination
+                                } else if (statuss[0] == 'EXAMINATION') {//EXAMINATION
                                     cr['dateEnd'] = { '$gt': now };
                                     cr['dateBeginAhead'] = { '$lt': now };
                                 }
                             } else if (statuss.length == 2) {
                                 //Two query conditions
-                                if (statuss.indexOf('未开始') < 0) {//has not started
+                                if (statuss.indexOf('NOTSTARTED') < 0) {//has not started
                                     //Excluded does not start, it means that the test has been completed and has ended, that is, the current time after the test start time
                                     cr['dateBeginAhead'] = { '$lt': now };
-                                } else if (statuss.indexOf('已结束') < 0) {//over
+                                } else if (statuss.indexOf('OVER') < 0) {//over
                                     //If the end of the exam is not included, it means that the exam has not started and the exam is in two kinds, that is, the exam end time is greater than the current time
                                     cr['dateEnd'] = { '$gt': now };
-                                } else if (statuss.indexOf('考试中') < 0) {//Examination
+                                } else if (statuss.indexOf('EXAMINATION') < 0) {//EXAMINATION
                                     //Excluding exams, it means either it has ended or it has not yet begun
                                     cr['dateEnd'] = { '$lt': now };
                                     cr['dateBeginAhead'] = { '$gt': now };
@@ -1773,9 +1773,9 @@ module.exports = function (app, express) {
                             var statuss = criteria.publicStatus['$in'];
                             //A query condition
                             if (statuss.length == 1) {
-                                if (statuss[0] == '已发布') {//Published
+                                if (statuss[0] == 'PUBLISHED') {//Published
                                     cr['isPublic'] = true;
-                                } else if (statuss[0] == '未发布') {//Unpublished
+                                } else if (statuss[0] == 'UNPUBLISHED') {//Unpublished
                                     cr['isPublic'] = false;
                                 }
                             }
@@ -1814,7 +1814,7 @@ module.exports = function (app, express) {
                         criteria.tester = { $in: ps };
                     }
 
-                    //Is there a requirement for the examination papers and status
+                    //Is there a requirement for the EXAMINATION papers and status
                     if (criteria.hasOwnProperty('submitStatus')) {
                         //Conversions to both isSubmit and isCorrected
                         //'Undelivered volume', 'Offered, Undetermined', 'Approved'
@@ -1822,23 +1822,23 @@ module.exports = function (app, express) {
                             var statuss = criteria.submitStatus['$in'];
                             //A query condition
                             if (statuss.length == 1) {
-                                if (statuss[0] == '未交卷') {//Unpaid
+                                if (statuss[0] == 'UNPAID') {//Unpaid
                                     criteria['isSubmit'] = false;
-                                } else if (statuss[0] == '已判卷') {//Sentenced
+                                } else if (statuss[0] == 'PASSED') {//Sentenced
                                     criteria['isCorrected'] = true;
-                                } else if (statuss[0] == '已交卷，未判卷') {//Has been handed in, but has not yet delivered
+                                } else if (statuss[0] == 'UNPASSED') {//Has been handed in, but has not yet delivered
                                     criteria['isCorrected'] = false;
                                     criteria['isSubmit'] = true;
                                 }
                             } else if (statuss.length == 2) {
                                 //Two query conditions
-                                if (statuss.indexOf('未交卷') < 0) {//Unpaid
+                                if (statuss.indexOf('UNPAID') < 0) {//Unpaid
                                     //Excluding unpaid rolls
                                     criteria['isSubmit'] = true;
-                                } else if (statuss.indexOf('已判卷') < 0) {//Sentenced
+                                } else if (statuss.indexOf('PASSED') < 0) {//Sentenced
                                     //Excluding already sentenced
                                     criteria['isCorrected'] = false;
-                                } else if (statuss.indexOf('已交卷，未判卷') < 0) {//Has been handed in, but has not yet delivered
+                                } else if (statuss.indexOf('UNPASSED') < 0) {//Has been handed in, but has not yet delivered
                                     //Excluding remitted papers, no papers are counted, that is, they have to be submitted, and they have to hand in and decide
                                     criteria['$or'] = [{ isSubmit: false }, { isSubmit: true, isCorrected: true }];
                                 }
@@ -1873,12 +1873,12 @@ module.exports = function (app, express) {
                     for (var i in data) {
                         //The status of the exam is only three, not started, the exam, and the end, depending on where the current time is before the start time and the end time.
                         if (data[i].config.dateEnd < now)
-                            data[i]._doc.config._doc.status = '已结束';//over
+                            data[i]._doc.config._doc.status = 'OVER';//over
                         else {//Start time needs to consider the number of minutes in advance
                             if (now < data[i].config.dateBeginAhead)
-                                data[i]._doc.config._doc.status = '未开始';//has not started
+                                data[i]._doc.config._doc.status = 'NOTSTARTED';//has not started
                             else
-                                data[i]._doc.config._doc.status = '考试中';//Examination
+                                data[i]._doc.config._doc.status = 'EXAMINATION';//EXAMINATION
                         }
                     }
 
@@ -1935,17 +1935,17 @@ module.exports = function (app, express) {
                     var now = new Date();
                     //The status of the exam is only three, not started, the exam, and the end, depending on where the current time is before the start time and the end time.
                     if (user.config.dateEnd < now)
-                        user._doc.config._doc.status = '已结束';//over
+                        user._doc.config._doc.status = 'OVER';//over
                     else {//Start time needs to consider the number of minutes in advance
                         if (now < user.config.dateBeginAhead)
-                            user._doc.config._doc.status = '未开始';//has not started
+                            user._doc.config._doc.status = 'NOTSTARTED';//has not started
                         else
-                            user._doc.config._doc.status = '考试中';//Examination
+                            user._doc.config._doc.status = 'EXAMINATION';//EXAMINATION
                     }
 
                     /** See if you have permission to view the test paper and prevent the user from obtaining test paper content by directly entering the URL
                      * 1. Except the administrator has the right to view the test paper, other people can only view their own papers
-                     * 2. The examination must be completed when the examination paper is viewed, and the examination is set to be rewindable
+                     * 2. The EXAMINATION must be completed when the EXAMINATION paper is viewed, and the EXAMINATION is set to be rewindable
                      * 3. You must take the exam while you take the exam
                      * 4. All other situations return error messages.
                      */
@@ -1955,10 +1955,10 @@ module.exports = function (app, express) {
                         if (req.body.type == 'view') {
                             if (!user.config._doc.canReview) {
                                 return res.send({ message: 'The paper does not open rewind function' });
-                            } else if (user._doc.config._doc.status != '已结束')//over
+                            } else if (user._doc.config._doc.status != 'OVER')//over
                                 return res.send({ message: 'View the test paper only after the test is over' });
                         } else if (req.body.type == 'test') {
-                            if (user._doc.config._doc.status != '考试中')//Examination
+                            if (user._doc.config._doc.status != 'EXAMINATION')//EXAMINATION
                                 return res.send({ message: 'Current exam status is not allowed to take the exam [status=' + user._doc.config._doc.status + ']' });
                             /** The test paper is allowed to open only once. If it is opened more than the second time, an error message is displayed.*/
                             if (user.isRead)
@@ -1966,7 +1966,7 @@ module.exports = function (app, express) {
                             /** Candidates who have already submitted papers cannot answer questions twice */
                             if (user.isSubmit)
                                 return res.send({ message: 'The set of papers has been handed over and cannot be answered again[ ' + user.submitIP + ', ' + user.dateSubmit + ']' });
-                            /** ip an examination */
+                            /** ip an EXAMINATION */
                             var pattern = user._doc.config._doc.ipPatternB;
                             if (pattern) {
                                 if (!utils.parseIP(ip, new RegExp(pattern, 'g')))
@@ -2059,7 +2059,7 @@ module.exports = function (app, express) {
                     return res.json({ success: true, message: Const.Msg.UpdateOK });
                 })
                 .catch(function (error) {
-                    return res.send('错误：' + JSON.stringify(error));
+                    return res.send('error: ' + JSON.stringify(error));
                 });
         })
 
@@ -2137,7 +2137,7 @@ module.exports = function (app, express) {
                                 ((data[i].config) ? data[i].config.name : '') + '\t' +
                                 ((data[i].tester) ? data[i].tester.code : '') + '\t' +
                                 ((data[i].tester) ? data[i].tester.name : '') + '\t' +
-                                (data[i].isSubmit ? '是' : '否') + '\t' +//Yes-No
+                                (data[i].isSubmit ? 'Yes' : 'No') + '\t' +//Yes-No
                                 data[i].dateSubmit + '\t' +
                                 data[i].score + '\t' +
                                 data[i].point + '\n';
@@ -2403,7 +2403,7 @@ module.exports = function (app, express) {
             if (req.body.hasOwnProperty('remark')) user.remark = req.body.remark;
 
             user.history = [];
-            user.history.unshift({ name: req.decoded._id, type: '发起' });//Initiate
+            user.history.unshift({ name: req.decoded._id, type: 'Initiate' });//Initiate
 
             //All students who match the query object pattern
             var criteria = { code: { $regex: req.body.pattern } };
@@ -2493,8 +2493,8 @@ module.exports = function (app, express) {
                 var numException = 0;
                 for (var i in sign.detail) {
                     if (sign.detail[i].status) {
-                        if (sign.detail[i].status == '未签到') {//Not checked in
-                        } else if (sign.detail[i].status == '已签到') {//Checked in
+                        if (sign.detail[i].status == 'NOT_CHECKEDIN') {//Not checked in
+                        } else if (sign.detail[i].status == 'CHECKEDIN') {//Checked in
                             numReal++;
                         } else {
                             console.log(numException, ' ', sign.detail[i].status);
@@ -2563,10 +2563,10 @@ module.exports = function (app, express) {
                 } else if (type == 'status') { //The teacher sets the sign-in status, only two states switch back and forth
                     var changeName;
                     if (user.isClosed) {
-                        changeName = '重新开启';//Reopen
+                        changeName = 'REOPEN';//Reopen
                         user.isClosed = false;
                     } else {
-                        changeName = '关闭';//shut down
+                        changeName = 'SHUTDOWN';//shut down
                         user.isClosed = true;
                     }
                     user.history.unshift({ name: userId, type: changeName });
@@ -2580,9 +2580,9 @@ module.exports = function (app, express) {
                     for (var i in user.detail) {
                         //Match the current user's ID
                         if (user.detail[i].name == userId) {
-                            if (user.detail[i].status == '未签到') {//Not checked in
+                            if (user.detail[i].status == 'NOT_CHECKEDIN') {//Not checked in
                                 user.detail[i].date = Date.now();
-                                user.detail[i].status = '已签到';//Checked in
+                                user.detail[i].status = 'CHECKEDIN';//Checked in
 
                                 //Record the IP address when checking in
                                 user.detail[i].ip = utils.getClientIP(req);
@@ -3089,7 +3089,7 @@ module.exports = function (app, express) {
                             var stamName = data[0].name;
                             var neuName = stamName;
                             var extension = data[0].extension;
-                            var uniqueSuffix = ' - 备份';
+                            var uniqueSuffix = ' - Backup';
                             var nameIndex = 1;
                             //console.log('enter whilst to find a unique name based on ', (neuName+ '.'+ extension));
                             async.whilst(
@@ -3170,7 +3170,7 @@ module.exports = function (app, express) {
                                     var foundUniqueName = false;
                                     var stamName = data[0].name;
                                     neuName = stamName;
-                                    var uniqueSuffix = ' - 备份';
+                                    var uniqueSuffix = ' - Backup';
                                     var nameIndex = 1;
                                     async.whilst(
                                         //Find out the process of not duplicating names
@@ -3379,7 +3379,7 @@ module.exports = function (app, express) {
                 if (err || !file) {
                     res.send(err);
                 } else {
-                    if (file.isDelete == 'Thu Jan 01 1970 08:00:00 GMT+0800 (中国标准时间)') {
+                    if (file.isDelete == 'Thu Jan 01 1970 08:00:00 GMT+0800 (China Standard Time)') {
                         File.update({ _id: id }, { isDelete: Date.now() }, function (err, numAffected) {
                             if (err)
                                 return res.send(err);

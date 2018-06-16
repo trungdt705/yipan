@@ -39,7 +39,7 @@ module.exports = (function (){
         }
 
         qLib.json = json;
-        console.log('发现 ', json.length, ' 个问题！');
+        console.log('Find ', json.length, ' Questions!');
     };
 
     /** Convert an array of answers to a question */

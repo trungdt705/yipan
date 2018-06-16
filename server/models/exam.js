@@ -115,13 +115,13 @@ ExamSchema.methods.getScore = function () {
             var anss = submit[question.qid];
             if (!anss || !anse) continue;
 
-            if (type == '单选') {
+            if (type == 'SINGLE') {
                 //Multiple choice questions directly compare whether the first element of two arrays is equal
                 if (anss.length > 0 && anse.length > 0) {
                     if (anss[0] == anse[0])
                         score += question.point;
                 }
-            } else if (type == '多选') {
+            } else if (type == 'MULTIPLE') {
                 //Traverse every submitted answer and count the number of multiple choice answers
                 var invalidAnsSubmit = 0;
                 for (var j = 0; j < anss.length; j++) {

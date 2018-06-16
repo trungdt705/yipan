@@ -55,7 +55,7 @@ module.exports = (function (){
     //Otherwise, see if it is the format of the candidate answer in order to add new candidate answers,
     // Otherwise it is regarded as an extension of the previous candidate answer.
     qLib.stateAnswer = function(transite){
-        if(transite.indexOf('试题编号:')==0){//Question number
+        if(transite.indexOf('Question number:')==0){//Question number
             //Go to read reference answer status
             qLib.current = qLib.stateValidAnswer;
         }else {
@@ -74,9 +74,9 @@ module.exports = (function (){
 
     // Referring to the answer, the sign of the next state is encountered "answer:”
     qLib.stateValidAnswer = function(transite){
-        if(transite.indexOf('答案:')==0){
+        if(transite.indexOf('answer:')==0){
             //Set reference correct answer
-            qLib.setValidAnswer(transite.substr('答案:'.length));
+            qLib.setValidAnswer(transite.substr('answer:'.length));
 
             //Go to read question type status
             qLib.current = qLib.stateType;
@@ -85,9 +85,9 @@ module.exports = (function (){
 
     // Test question type, the sign that goes to the next state is encountered the question type:”
     qLib.stateType = function(transite){
-        if(transite.indexOf('题型:')==0){
+        if(transite.indexOf('Question type:')==0){
             //Set questions
-            var type = transite.substr('题型:'.length);
+            var type = transite.substr('Question type:'.length);
             if(qLib.data.type.indexOf(type)<0)
                 qLib.data.type += ',' + type;
 
@@ -159,8 +159,8 @@ module.exports = (function (){
     qLib.generateJSON = function(){
         qLib.data.json = null;
         /**
-         * "type": "单选"                     //The last line of question type gets from
-         ,"category": "第三章 静态测试"      //The last/after string in the first line //Chapter III Static Test
+         * "type": "Single election"                     //The last line of question type gets from
+         ,"category": "Chapter III Static Test"      //The last/after string in the first line //Chapter III Static Test
          ,"form":                            //The default is a style
             [{
                 "desc", "ans"[{"desc","isValid"}]

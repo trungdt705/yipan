@@ -1,8 +1,8 @@
 /**
- * 测试mongoose的aggregate调用
+ * Test the mongoose aggregate call
  * Created by Administrator on 2015/9/15.
  *
- * 用于查询按类属和类型分组统计的聚合语句
+ * Aggregate statement used to query group statistics by generics and types
  db.questions.aggregate([{$group:{_id:{category:"$category",type:"$type"},count:{$sum:1}}}]);
  */
 var config = require('../../config');

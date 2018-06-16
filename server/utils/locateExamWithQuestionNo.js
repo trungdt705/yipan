@@ -32,13 +32,13 @@ Exam
                     + ' '+ res[i].tester.name+ ' '+ res[i].tester.code);
             else
                 json.push(i+' '+ res[i]._id+ ' '+ res[i].config+ ' '+ res[i].score+ ' '+ res[i].point
-                    + ' '+ res[i].tester.name+ ' '+ res[i].tester.code+ ' 未交卷');
+                    + ' '+ res[i].tester.name+ ' '+ res[i].tester.code+ ' Unpaid');
         }
         fs.appendFile(fileName, json.join('\n'), function(err){
             if(err)
-                console.log("写入文件[" , fileName , "]失败 " , err);
+                console.log("Write file[" , fileName , "]failure " , err);
             else
-                console.log("写入文件[" , fileName , "]成功。 ");
+                console.log("Write file[" , fileName , "]success. ");
         });
     }
 });
